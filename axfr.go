@@ -1,16 +1,27 @@
 package gandi
 
+import "fmt"
+
 // Tsig contains tsig data (no kidding!)
 type Tsig struct {
 	KeyName     string `json:"key_name, omitempty"`
 	Secret      string `json:"secret,omitempty"`
 	UUID        string `json:"uuid,omitempty"`
 	AxfrTsigURL string `json:"axfr_tsig_url,omitempty"`
+	//ConfigSamples  []string `json:"config_samples,omitempty"`
+	ConfigSamples interface{} `json:"config_samples,omitempty"`
 }
 
 // ListTsigs lists all tsigs
 func (g *Gandi) ListTsigs() (tsigs []Tsig, err error) {
 	_, err = g.askGandi(mGET, "axfr/tsig", nil, &tsigs)
+	return
+}
+
+// GetTsig lists more tsig details
+func (g *Gandi) GetTsig(uuid string) (tsig Tsig, err error) {
+	_, err = g.askGandi(mGET, "axfr/tsig/"+uuid, nil, &tsig)
+	fmt.Println(tsig)
 	return
 }
 
