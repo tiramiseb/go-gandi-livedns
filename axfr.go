@@ -1,7 +1,5 @@
 package gandi
 
-import "fmt"
-
 // Tsig contains tsig data (no kidding!)
 type Tsig struct {
 	KeyName     string `json:"key_name, omitempty"`
@@ -21,7 +19,6 @@ func (g *Gandi) ListTsigs() (tsigs []Tsig, err error) {
 // GetTsig lists more tsig details
 func (g *Gandi) GetTsig(uuid string) (tsig Tsig, err error) {
 	_, err = g.askGandi(mGET, "axfr/tsig/"+uuid, nil, &tsig)
-	fmt.Println(tsig)
 	return
 }
 
