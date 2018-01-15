@@ -6,7 +6,6 @@ type Tsig struct {
 	Secret      string `json:"secret,omitempty"`
 	UUID        string `json:"uuid,omitempty"`
 	AxfrTsigURL string `json:"axfr_tsig_url,omitempty"`
-	//ConfigSamples  []string `json:"config_samples,omitempty"`
 	ConfigSamples interface{} `json:"config_samples,omitempty"`
 }
 
