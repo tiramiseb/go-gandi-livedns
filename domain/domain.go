@@ -10,7 +10,13 @@ type Domain struct {
 	client client.Gandi
 }
 
-func New(g client.Gandi) *Domain {
+func New(apikey string, sharing_id string, debug bool, dry_run bool) *Domain {
+	client := client.New(apikey,  sharing_id,  debug, dry_run)
+	client.SetEndpoint("domain/")
+	return &Domain{client: *client}
+}
+
+func NewFromClient(g client.Gandi) *Domain {
 	g.SetEndpoint("domain/")
 	return &Domain{client: g}
 }

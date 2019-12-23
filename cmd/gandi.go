@@ -54,8 +54,8 @@ func main() {
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Parse()
 	g = client.New(*apiKey, *sharing_id, *debug, *dry_run)
-	d = domain.New(*g)
-	l = livedns.New(*g)
+	d = domain.NewFromClient(*g)
+	l = livedns.NewFromClient(*g)
 	switch *apiType {
 	case "domain":
 		domain_type()
