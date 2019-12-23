@@ -5,7 +5,10 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/kingpin"
-	gandi "github.com/tiramiseb/go-gandi-livedns"
+
+	"github.com/tiramiseb/go-gandi-livedns/client"
+	"github.com/tiramiseb/go-gandi-livedns/domain"
+	"github.com/tiramiseb/go-gandi-livedns/livedns"
 )
 
 const (
@@ -17,7 +20,7 @@ const (
 	aDelKey      = "delkey"
 	aDelSlave    = "delslave"
 	aDetach      = "detach"
-	aDomains     = "domains"
+	aDomains     = "livedns_domains"
 	aGet         = "get"
 	aKeys        = "keys"
 	aList        = "list"
@@ -34,32 +37,40 @@ const (
 )
 
 var (
-	resourceType = kingpin.Arg("type", "Resource type (zone, record, snapshot, domain or axfr)").Required().String()
+	apiType = kingpin.Arg("type", "API type (domain, livedns, email, billing or organisation)").Required().String()
+	resourceType = kingpin.Arg("subtype", "Resource type (record, livednsSnapshot, domain or livednsAxfr)").Required().String()
 	action       = kingpin.Arg("action", "Action (valid actions depend on the type - if you provide an erroneous action, a list of allowed actions will be displayed)").Required().String()
 	args         = kingpin.Arg("args", "Arguments to the action (valid arguments depend on the action)").Strings()
 	apiKey       = kingpin.Flag("key", "The Gandi LiveDNS API key (may be stored in the GANDI_KEY environment variable)").OverrideDefaultFromEnvar("GANDI_KEY").Short('k').String()
 	sharing_id   = kingpin.Flag("sharing_id", "The Gandi LiveDNS sharing_id (may be stored in the GANDI_SHARING_ID environment variable)").OverrideDefaultFromEnvar("GANDI_SHARING_ID").Short('i').String()
-	g            *gandi.Gandi
+	debug = kingpin.Flag("debug", "Show debug info").Bool()
+	dry_run = kingpin.Flag("dry_run", "Show debug info").Bool()
+	g            *client.Gandi
+	d *domain.Domain
+	l *livedns.LiveDNS
 )
 
 func main() {
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Parse()
-	g = gandi.New(*apiKey, *sharing_id)
-	switch *resourceType {
-	case "zone":
-		zone()
-	case "record":
-		zoneRecord()
-	case "snapshot":
-		snapshot()
+	g = client.New(*apiKey, *sharing_id, *debug, *dry_run)
+	d = domain.New(*g)
+	l = livedns.New(*g)
+	switch *apiType {
 	case "domain":
-		domain()
-	case "axfr":
-		axfr()
+		domain_type()
+	case "livedns":
+		livedns_type()
+	// case "email":
+	// 	email_type()
+	// case "billing":
+	// 	billing_type()
+	// case "organization":
+	// 	organization_type()
 	default:
 		kingpin.Usage()
 	}
+
 }
 
 func jsonPrint(data interface{}, err error) {

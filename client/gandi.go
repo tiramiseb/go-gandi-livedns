@@ -1,4 +1,4 @@
-package gandi
+package client
 
 import (
 	"bytes"
@@ -11,60 +11,48 @@ import (
 )
 
 const (
-	gandiEndpoint = "https://dns.api.gandi.net/api/v5/"
-	// HTTP Methods
-	mPATCH  = http.MethodPatch
-	mGET    = http.MethodGet
-	mPOST   = http.MethodPost
-	mDELETE = http.MethodDelete
-	mPUT    = http.MethodPut
+	gandiEndpoint = "https://api.gandi.net/v5/"
 )
 
-// Gandi makes it easier to interact with Gandi LiveDNS
+// Gandi makes it easier to interact with the Gandi API
 type Gandi struct {
 	apikey     string
 	sharing_id string
+	endpoint string
 	debug      bool
+	dryRun bool
 }
 
 // New instantiates a new Gandi instance
-func New(apikey string, sharing_id string) *Gandi {
-	return &Gandi{apikey: apikey, sharing_id: sharing_id}
+func New(apikey string, sharing_id string, debug bool, dry_run bool) *Gandi {
+	return &Gandi{apikey: apikey, endpoint: gandiEndpoint, sharing_id: sharing_id, debug: debug, dryRun: dry_run}
+}
+
+func (g *Gandi) SetEndpoint(endpoint string) {
+	g.endpoint = gandiEndpoint + endpoint
+}
+
+func (g *Gandi) Get(path string, params, recipient interface{}) (http.Header, error) {
+	return g.askGandi(http.MethodGet, path, params, recipient)
+}
+
+func (g *Gandi) Post(path string, params, recipient interface{}) (http.Header, error) {
+	return g.askGandi(http.MethodPost, path, params, recipient)
+}
+
+func (g *Gandi) Patch(path string, params, recipient interface{}) (http.Header, error) {
+	return g.askGandi(http.MethodPost, path, params, recipient)
+}
+
+func (g *Gandi) Delete(path string, params, recipient interface{}) (http.Header, error) {
+	return g.askGandi(http.MethodPost, path, params, recipient)
+}
+
+func (g *Gandi) Put(path string, params, recipient interface{}) (http.Header, error) {
+	return g.askGandi(http.MethodPost, path, params, recipient)
 }
 
 func (g *Gandi) askGandi(method, path string, params, recipient interface{}) (http.Header, error) {
-	marshalledParams, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := g.doAskGandi(method, path, marshalledParams, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	decoder := json.NewDecoder(resp.Body)
-	decoder.Decode(recipient)
-	return resp.Header, nil
-}
-
-func (g *Gandi) askGandiToBytes(method, path string, params interface{}) (http.Header, []byte, error) {
-	headers := [][2]string{
-		[2]string{"Accept", "text/plain"},
-	}
-	marshalledParams, err := json.Marshal(params)
-	if err != nil {
-		return nil, nil, err
-	}
-	resp, err := g.doAskGandi(method, path, marshalledParams, headers)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer resp.Body.Close()
-	content, err := ioutil.ReadAll(resp.Body)
-	return resp.Header, content, err
-}
-
-func (g *Gandi) askGandiFromBytes(method, path string, params []byte, recipient interface{}) (http.Header, error) {
 	resp, err := g.doAskGandi(method, path, params, nil)
 	if err != nil {
 		return nil, err
@@ -75,25 +63,42 @@ func (g *Gandi) askGandiFromBytes(method, path string, params []byte, recipient 
 	return resp.Header, nil
 }
 
-func (g *Gandi) doAskGandi(method, path string, params []byte, extraHeaders [][2]string) (*http.Response, error) {
+func (g *Gandi) GetBytes(path string, params interface{}) (http.Header, []byte, error) {
+	headers := [][2]string{
+		[2]string{"Accept", "text/plain"},
+	}
+	resp, err := g.doAskGandi(http.MethodGet, path, params, headers)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer resp.Body.Close()
+	content, err := ioutil.ReadAll(resp.Body)
+	return resp.Header, content, err
+}
+
+func (g *Gandi) doAskGandi(method, path string, p interface{}, extraHeaders [][2]string) (*http.Response, error) {
 	var (
 		err error
 		req *http.Request
 	)
+	params, err := json.Marshal(p)
+	if err != nil {
+		return nil, err
+	}
 	client := &http.Client{}
 	suffix := ""
 	if len(g.sharing_id) != 0 {
 		suffix += "?sharing_id=" + g.sharing_id
 	}
 	if params != nil && string(params) != "null" {
-		req, err = http.NewRequest(method, gandiEndpoint+path+suffix, bytes.NewReader(params))
+		req, err = http.NewRequest(method, g.endpoint+path+suffix, bytes.NewReader(params))
 	} else {
-		req, err = http.NewRequest(method, gandiEndpoint+path+suffix, nil)
+		req, err = http.NewRequest(method, g.endpoint+path+suffix, nil)
 	}
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("X-Api-Key", g.apikey)
+	req.Header.Add("Authorization", "Apikey " + g.apikey)
 	req.Header.Add("Content-Type", "application/json")
 	for _, header := range extraHeaders {
 		req.Header.Add(header[0], header[1])
