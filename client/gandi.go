@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
+
+	"github.com/tiramiseb/go-gandi-livedns"
 )
 
 const (
@@ -17,15 +19,13 @@ const (
 // Gandi makes it easier to interact with the Gandi API
 type Gandi struct {
 	apikey     string
-	sharing_id string
 	endpoint string
-	debug      bool
-	dryRun bool
+	config *gandi.Config
 }
 
 // New instantiates a new Gandi instance
-func New(apikey string, sharing_id string, debug bool, dry_run bool) *Gandi {
-	return &Gandi{apikey: apikey, endpoint: gandiEndpoint, sharing_id: sharing_id, debug: debug, dryRun: dry_run}
+func New(apikey string, config *gandi.Config) *Gandi {
+	return &Gandi{apikey: apikey, endpoint: gandiEndpoint, config: config}
 }
 
 func (g *Gandi) SetEndpoint(endpoint string) {
@@ -87,8 +87,8 @@ func (g *Gandi) doAskGandi(method, path string, p interface{}, extraHeaders [][2
 	}
 	client := &http.Client{}
 	suffix := ""
-	if len(g.sharing_id) != 0 {
-		suffix += "?sharing_id=" + g.sharing_id
+	if len(g.config.SharingID) != 0 {
+		suffix += "?sharing_id=" + g.config.SharingID
 	}
 	if params != nil && string(params) != "null" {
 		req, err = http.NewRequest(method, g.endpoint+path+suffix, bytes.NewReader(params))
@@ -103,7 +103,7 @@ func (g *Gandi) doAskGandi(method, path string, p interface{}, extraHeaders [][2
 	for _, header := range extraHeaders {
 		req.Header.Add(header[0], header[1])
 	}
-	if g.debug {
+	if g.config.Debug {
 		dump, _ := httputil.DumpRequestOut(req, true)
 		fmt.Println("=======================================\nREQUEST:")
 		fmt.Println(string(dump))
@@ -112,7 +112,7 @@ func (g *Gandi) doAskGandi(method, path string, p interface{}, extraHeaders [][2
 	if err != nil {
 		return resp, err
 	}
-	if g.debug {
+	if g.config.Debug {
 		dump, _ := httputil.DumpResponse(resp, true)
 		fmt.Println("=======================================\nREQUEST:")
 		fmt.Println(string(dump))

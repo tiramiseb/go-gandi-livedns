@@ -1,13 +1,16 @@
 package livedns
 
-import "github.com/tiramiseb/go-gandi-livedns/client"
+import (
+	"github.com/tiramiseb/go-gandi-livedns"
+	"github.com/tiramiseb/go-gandi-livedns/client"
+)
 
 type LiveDNS struct {
 	client client.Gandi
 }
 
-func New(apikey string, sharing_id string, debug bool, dry_run bool) *LiveDNS {
-	client := client.New(apikey,  sharing_id,  debug, dry_run)
+func New(apikey string, config *gandi.Config) *LiveDNS {
+	client := client.New(apikey,  config)
 	client.SetEndpoint("livedns/")
 	return &LiveDNS{client: *client}
 }
