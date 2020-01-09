@@ -18,9 +18,9 @@ const (
 
 // Gandi makes it easier to interact with the Gandi API
 type Gandi struct {
-	apikey     string
+	apikey   string
 	endpoint string
-	config *gandi.Config
+	config   *gandi.Config
 }
 
 // New instantiates a new Gandi instance
@@ -98,7 +98,7 @@ func (g *Gandi) doAskGandi(method, path string, p interface{}, extraHeaders [][2
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Apikey " + g.apikey)
+	req.Header.Add("Authorization", "Apikey "+g.apikey)
 	req.Header.Add("Content-Type", "application/json")
 	for _, header := range extraHeaders {
 		req.Header.Add(header[0], header[1])

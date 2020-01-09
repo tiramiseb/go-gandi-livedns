@@ -1,4 +1,4 @@
-package livedns
+package gandi_livedns
 
 import (
 	"github.com/tiramiseb/go-gandi-livedns"
