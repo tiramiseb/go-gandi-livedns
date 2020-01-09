@@ -77,7 +77,7 @@ func addDomainToZone() {
 		})
 		return
 	}
-	jsonPrint(l.AddDomainToZone((*args)[0], (*args)[1]))
+	jsonPrint(l.CreateDomain((*args)[0], (*args)[1]))
 }
 
 func getDomain() {

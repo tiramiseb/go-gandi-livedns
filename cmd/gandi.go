@@ -7,8 +7,9 @@ import (
 	"github.com/alecthomas/kingpin"
 
 	"github.com/tiramiseb/go-gandi-livedns"
-	"github.com/tiramiseb/go-gandi-livedns/domain"
-	"github.com/tiramiseb/go-gandi-livedns/livedns"
+	"github.com/tiramiseb/go-gandi-livedns/gandi_config"
+	"github.com/tiramiseb/go-gandi-livedns/gandi_domain"
+	"github.com/tiramiseb/go-gandi-livedns/gandi_livedns"
 )
 
 const (
@@ -37,28 +38,28 @@ const (
 )
 
 var (
-	apiType = kingpin.Arg("type", "API type (domain, livedns, email, billing or organisation)").Required().String()
+	apiType      = kingpin.Arg("type", "API type (domain, livedns, email, billing or organisation)").Required().String()
 	resourceType = kingpin.Arg("subtype", "Resource type (record, livednsSnapshot, domain or livednsAxfr)").Required().String()
 	action       = kingpin.Arg("action", "Action (valid actions depend on the type - if you provide an erroneous action, a list of allowed actions will be displayed)").Required().String()
 	args         = kingpin.Arg("args", "Arguments to the action (valid arguments depend on the action)").Strings()
 	apiKey       = kingpin.Flag("key", "The Gandi LiveDNS API key (may be stored in the GANDI_KEY environment variable)").OverrideDefaultFromEnvar("GANDI_KEY").Short('k').String()
 	sharing_id   = kingpin.Flag("sharing_id", "The Gandi LiveDNS sharing_id (may be stored in the GANDI_SHARING_ID environment variable)").OverrideDefaultFromEnvar("GANDI_SHARING_ID").Short('i').String()
-	debug = kingpin.Flag("debug", "Show debug info").Bool()
-	dry_run = kingpin.Flag("dry_run", "Show debug info").Bool()
-	d *domain.Domain
-	l *livedns.LiveDNS
+	debug        = kingpin.Flag("debug", "Show debug info").Bool()
+	dry_run      = kingpin.Flag("dry_run", "Show debug info").Bool()
+	d            *gandi_domain.Domain
+	l            *gandi_livedns.LiveDNS
 )
 
 func main() {
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Parse()
-	g := gandi.Config{
+	g := gandi_config.Config{
 		SharingID: *sharing_id,
 		Debug:     *debug,
 		DryRun:    *dry_run,
 	}
-	d = domain.New(*apiKey, &g)
-	l = livedns.New(*apiKey, &g)
+	d = gandi.NewDomainClient(*apiKey, g)
+	l = gandi.NewLiveDNSClient(*apiKey, g)
 	switch *apiType {
 	case "domain":
 		domain_type()
