@@ -7,7 +7,7 @@ import (
 	"github.com/alecthomas/kingpin"
 
 	"github.com/tiramiseb/go-gandi-livedns"
-	"github.com/tiramiseb/go-gandi-livedns/domain"
+	"github.com/tiramiseb/go-gandi-livedns/gandi_domain"
 	"github.com/tiramiseb/go-gandi-livedns/gandi_livedns"
 )
 
@@ -45,7 +45,7 @@ var (
 	sharing_id   = kingpin.Flag("sharing_id", "The Gandi LiveDNS sharing_id (may be stored in the GANDI_SHARING_ID environment variable)").OverrideDefaultFromEnvar("GANDI_SHARING_ID").Short('i').String()
 	debug        = kingpin.Flag("debug", "Show debug info").Bool()
 	dry_run      = kingpin.Flag("dry_run", "Show debug info").Bool()
-	d            *domain.Domain
+	d            *gandi_domain.Domain
 	l            *gandi_livedns.LiveDNS
 )
 
@@ -57,7 +57,7 @@ func main() {
 		Debug:     *debug,
 		DryRun:    *dry_run,
 	}
-	d = domain.New(*apiKey, &g)
+	d = gandi_domain.New(*apiKey, &g)
 	l = gandi_livedns.New(*apiKey, &g)
 	switch *apiType {
 	case "domain":
