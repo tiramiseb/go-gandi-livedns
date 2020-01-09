@@ -6,7 +6,7 @@ import (
 
 	"github.com/alecthomas/kingpin"
 
-	"github.com/tiramiseb/go-gandi-livedns"
+	gandi "github.com/tiramiseb/go-gandi-livedns"
 	"github.com/tiramiseb/go-gandi-livedns/gandi_config"
 	"github.com/tiramiseb/go-gandi-livedns/gandi_domain"
 	"github.com/tiramiseb/go-gandi-livedns/gandi_livedns"
