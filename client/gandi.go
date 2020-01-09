@@ -18,9 +18,9 @@ const (
 
 // Gandi makes it easier to interact with the Gandi API
 type Gandi struct {
-	apikey     string
+	apikey   string
 	endpoint string
-	config *gandi.Config
+	config   *gandi.Config
 }
 
 // New instantiates a new Gandi instance
@@ -45,11 +45,11 @@ func (g *Gandi) Patch(path string, params, recipient interface{}) (http.Header, 
 }
 
 func (g *Gandi) Delete(path string, params, recipient interface{}) (http.Header, error) {
-	return g.askGandi(http.MethodPost, path, params, recipient)
+	return g.askGandi(http.MethodDelete, path, params, recipient)
 }
 
 func (g *Gandi) Put(path string, params, recipient interface{}) (http.Header, error) {
-	return g.askGandi(http.MethodPost, path, params, recipient)
+	return g.askGandi(http.MethodPut, path, params, recipient)
 }
 
 func (g *Gandi) askGandi(method, path string, params, recipient interface{}) (http.Header, error) {
@@ -98,7 +98,7 @@ func (g *Gandi) doAskGandi(method, path string, p interface{}, extraHeaders [][2
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Apikey " + g.apikey)
+	req.Header.Add("Authorization", "Apikey "+g.apikey)
 	req.Header.Add("Content-Type", "application/json")
 	for _, header := range extraHeaders {
 		req.Header.Add(header[0], header[1])
