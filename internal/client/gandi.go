@@ -16,7 +16,7 @@ const (
 	gandiEndpoint = "https://api.gandi.net/v5/"
 )
 
-// Gandi makes it easier to interact with the Gandi API
+// Gandi is the handle used to interact with the Gandi API
 type Gandi struct {
 	apikey   string
 	endpoint string
@@ -41,15 +41,15 @@ func (g *Gandi) Post(path string, params, recipient interface{}) (http.Header, e
 }
 
 func (g *Gandi) Patch(path string, params, recipient interface{}) (http.Header, error) {
-	return g.askGandi(http.MethodPost, path, params, recipient)
+	return g.askGandi(http.MethodPatch, path, params, recipient)
 }
 
 func (g *Gandi) Delete(path string, params, recipient interface{}) (http.Header, error) {
-	return g.askGandi(http.MethodPost, path, params, recipient)
+	return g.askGandi(http.MethodDelete, path, params, recipient)
 }
 
 func (g *Gandi) Put(path string, params, recipient interface{}) (http.Header, error) {
-	return g.askGandi(http.MethodPost, path, params, recipient)
+	return g.askGandi(http.MethodPut, path, params, recipient)
 }
 
 func (g *Gandi) askGandi(method, path string, params, recipient interface{}) (http.Header, error) {
