@@ -3,7 +3,7 @@ package gandi_domain
 import (
 	"time"
 
-	"github.com/tiramiseb/go-gandi-livedns"
+	"github.com/tiramiseb/go-gandi-livedns/gandi_config"
 	"github.com/tiramiseb/go-gandi-livedns/internal/client"
 )
 
@@ -11,7 +11,7 @@ type Domain struct {
 	client client.Gandi
 }
 
-func New(apikey string, config *gandi.Config) *Domain {
+func New(apikey string, config gandi_config.Config) *Domain {
 	client := client.New(apikey, config)
 	client.SetEndpoint("domain/")
 	return &Domain{client: *client}

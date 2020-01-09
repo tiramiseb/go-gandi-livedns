@@ -9,7 +9,7 @@ import (
 	"net/http/httputil"
 	"strings"
 
-	"github.com/tiramiseb/go-gandi-livedns"
+	config "github.com/tiramiseb/go-gandi-livedns/gandi_config"
 )
 
 const (
@@ -20,11 +20,11 @@ const (
 type Gandi struct {
 	apikey   string
 	endpoint string
-	config   *gandi.Config
+	config   config.Config
 }
 
 // New instantiates a new Gandi instance
-func New(apikey string, config *gandi.Config) *Gandi {
+func New(apikey string, config config.Config) *Gandi {
 	return &Gandi{apikey: apikey, endpoint: gandiEndpoint, config: config}
 }
 

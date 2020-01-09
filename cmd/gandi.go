@@ -7,6 +7,7 @@ import (
 	"github.com/alecthomas/kingpin"
 
 	"github.com/tiramiseb/go-gandi-livedns"
+	"github.com/tiramiseb/go-gandi-livedns/gandi_config"
 	"github.com/tiramiseb/go-gandi-livedns/gandi_domain"
 	"github.com/tiramiseb/go-gandi-livedns/gandi_livedns"
 )
@@ -52,13 +53,13 @@ var (
 func main() {
 	kingpin.CommandLine.HelpFlag.Short('h')
 	kingpin.Parse()
-	g := gandi.Config{
+	g := gandi_config.Config{
 		SharingID: *sharing_id,
 		Debug:     *debug,
 		DryRun:    *dry_run,
 	}
-	d = gandi_domain.New(*apiKey, &g)
-	l = gandi_livedns.New(*apiKey, &g)
+	d = gandi.NewDomainClient(*apiKey, g)
+	l = gandi.NewLiveDNSClient(*apiKey, g)
 	switch *apiType {
 	case "domain":
 		domain_type()
