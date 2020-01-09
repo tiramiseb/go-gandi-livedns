@@ -2,7 +2,7 @@ package livedns
 
 import (
 	"github.com/tiramiseb/go-gandi-livedns"
-	"github.com/tiramiseb/go-gandi-livedns/client"
+	"github.com/tiramiseb/go-gandi-livedns/internal/client"
 )
 
 type LiveDNS struct {
@@ -10,7 +10,7 @@ type LiveDNS struct {
 }
 
 func New(apikey string, config *gandi.Config) *LiveDNS {
-	client := client.New(apikey,  config)
+	client := client.New(apikey, config)
 	client.SetEndpoint("livedns/")
 	return &LiveDNS{client: *client}
 }
