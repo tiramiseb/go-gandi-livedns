@@ -64,7 +64,7 @@ func (g *Gandi) askGandi(method, path string, params, recipient interface{}) (ht
 
 func (g *Gandi) GetBytes(path string, params interface{}) (http.Header, []byte, error) {
 	headers := [][2]string{
-		[2]string{"Accept", "text/plain"},
+		{"Accept", "text/plain"},
 	}
 	resp, err := g.doAskGandi(http.MethodGet, path, params, headers)
 	if err != nil {
