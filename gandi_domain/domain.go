@@ -85,7 +85,7 @@ type DomainListResponse struct {
 
 // AutoRenew is the auto renewal information for the domain
 type AutoRenew struct {
-	Href     string      `json:"string"`
+	Href     string      `json:"href"`
 	Dates    []time.Time `json:"dates,omitempty"`
 	Duration int         `json:"duration,omitempty"`
 	Enabled  *bool       `json:"enabled,omitempty"`
